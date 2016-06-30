@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login form</title>
+</head>
+<body>
+<h1>Login form</h1>
+
+<form method="post" id="loginForm" style="display:none">
+
+    <input name="username" placeholder="Username" autocomplete="name"/>
+    <input type="password" name="password" placeholder="password" autocomplete="password ">
+    <input type="submit" name="button" value="Login">
+</form>
+
+
+<script>
+    var loginForm = document.getElementById('loginForm');
+
+    if ('credentials' in navigator) {
+        navigator.credentials.get({
+            "password": true,
+//            "federated": { // use custom api like facebook/google
+//                "providers": [ "https://federation.com" ]
+//            }
+        }).then(function (credential) {
+            if (!credential) {
+                loginForm.style.display = 'block';
+                loginForm.addEventListener('submit', function (e) {
+                        e.preventDefault();
+                        var userData = new FormData(e.target);
+                        var c = new PasswordCredential({
+                            id: userData.get("username"),
+                            password: userData.get("password"),
+                            usernameOrEmail: userData.get("username")
+                        }); // https://www.w3.org/TR/credential-management/#dom-passwordcredential-passwordcredential
+
+                        var init = { method: "POST", credentials: c };
+                        // DO SERVER SIDE AUTH
+
+//                        fetch(e.target.action, init).then(r => {
+//                            if (/* |r| is a "successful" Response */)
+//                            navigator.credentials.store(c);
+//                        }
+
+                        if(true/* the credentials are ok*/){
+                            navigator.credentials.store(c); // store credentials to use them later
+                        }
+
+
+                });
+            } else {
+                console.log("user is already logged in, enjoy the site")
+            }
+
+        }).catch(function (err) {
+            console.log('err', err);
+        });
+    } else {
+        loginForm.style.display = 'block';
+    }
+</script>
+
+</body>
+</html>

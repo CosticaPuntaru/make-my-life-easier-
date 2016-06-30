@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PAyment</title>
+</head>
+<body>
+<form  method="post">
+    <input name="name" placeholder="Card Holder" autocomplete="cc-name"/>
+    <input name="cardnumber" placeholder="Card number" autocomplete="cc-number">
+    <input name="expire" type="date" placeholder="Expire date" autocomplete="cc-exp">
+    <input name="cvv" type="number" placeholder="CVV" autocomplete="cc-csc">
+    <input type="submit" value="Plateste">
+</form>
+
+<script>
+    var methodData = [
+        {
+            supportedMethods: ["visa","bitcoin"]
+        },
+        {
+            supportedMethods: ["bobpay.com"],
+            data: {
+                merchantIdentifier: "XXXX",
+                bobPaySpecificField: true
+            }
+        }
+    ];
+
+    var details = {
+        displayItems: [
+            {
+                label: "Sub-total",
+                amount: { currency: "USD", value : "55.00" }, // US$55.00
+            },
+            {
+                label: "Sales Tax",
+                amount: { currency: "USD", value : "5.00" }, // US$5.00
+            }
+        ],
+        total:  {
+            label: "Total due",
+            amount: { currency: "USD", value : "60.00" }, // US$60.00
+        }
+    };
+    var options = {
+        requestShipping: true
+    };
+
+    var payment = new PaymentRequest(methodData, details, options);
+    payment.addEventListener("shippingaddresschange", function (changeEvent) {
+        // Process shipping address change
+    });
+
+    payment.show().then(function(paymentResponse) {
+        // Process paymentResponse
+        // paymentResponse.methodName contains the selected payment method
+        // paymentResponse.details contains a payment method specific response
+        paymentResponse.complete("success");
+    }).catch(function(err) {
+        console.error("Uh oh, something bad happened", err.message);
+    });
+</script>
+</body>
+</html>
